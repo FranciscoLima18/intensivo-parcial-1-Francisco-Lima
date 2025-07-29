@@ -1,56 +1,75 @@
-import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
-import { departamentoRepository } from '../../services/departamentos.repository.js';
-import { Departamento } from '../../schemas/departamento.js';
-import { Type } from '@sinclair/typebox';
+import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { departamentoRepository } from "../../services/departamentos.repository.js";
+import {
+  DepartamentoParams,
+  DepartamentoSchema,
+} from "../../types/schemas/departamento.js";
+import { Type } from "@sinclair/typebox";
+import {
+  UsuarioParams,
+  UsuarioParamsType,
+} from "../../types/schemas/usuario.js";
+import { usuarioRepository } from "../../services/usuario.repository.js";
 
-const departamentoRoutes: FastifyPluginAsyncTypebox = async (fastify, opts): Promise<void> => {
-
-  fastify.get('/', {
+const departamentoRoutes: FastifyPluginAsyncTypebox = async (
+  fastify,
+  opts
+): Promise<void> => {
+  fastify.get("/", {
     schema: {
       tags: ["departamentos"],
       summary: "Obtener listado de departamentos",
-      description : "Obtener listado de departamentos",
-      security: [
-        { bearerAuth: [] }
-      ]
+      description: "Obtener listado de departamentos",
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: Type.Array(DepartamentoSchema),
+      },
     },
+    onRequest: fastify.verifyAdmin,
     handler: async function (request, reply) {
-      return departamentoRepository.getAll();
-    }
+      const list = await departamentoRepository.getAll();
+      reply.send(list);
+    },
   });
 
-  fastify.get('/:id_departamento', {
+  fastify.get("/:id_departamento/localidades", {
     schema: {
       tags: ["departamentos"],
+      params: DepartamentoParams,
       summary: "Obtener listado de departamentos",
-      description : "Obtener listado de departamentos",
-      params: Type.Object({id_departamento : Type.Integer()}),
-      response : {
-        200 : Departamento
+      description: "Obtener listado de departamentos",
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: Type.Array(DepartamentoSchema),
       },
-      security: [
-        { bearerAuth: [] }
-      ]
     },
+    onRequest: fastify.verifyAdmin,
     handler: async function (request, reply) {
-      throw new Error("No implementado");
-    }
-  })
+      const { id_departamento } = request.params as DepartamentoParams;
+      const departamentos = await departamentoRepository.getLocalidades(
+        id_departamento
+      );
+      return departamentos;
+    },
+  });
 
-  fastify.get('/:id_departamento/localidades', {
+  fastify.get("/:id_usuario", {
     schema: {
-      tags: ["departamentos"],
-      summary: "Obtener listado de departamentos",
-      description : "Obtener listado de departamentos",
-      security: [
-        { bearerAuth: [] }
-      ]
+      tags: ["usuarios"],
+      summary: "Obtener deptos usuario",
+      params: UsuarioParams,
+      description: "Obtener departamentos del usuario",
+      security: [{ bearerAuth: [] }],
+      response: { 200: Type.Array(DepartamentoSchema) },
     },
+    onRequest: fastify.verifySelfOrAdmin,
     handler: async function (request, reply) {
-      throw new Error("No implementado");
-    }
-  })
+      const { id } = request.params as UsuarioParamsType;
 
-}
+      const departamentos = await usuarioRepository.getDepartamentos(id);
+      return departamentos;
+    },
+  });
+};
 
-export default departamentoRoutes
+export default departamentoRoutes;

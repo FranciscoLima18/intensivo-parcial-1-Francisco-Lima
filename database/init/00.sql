@@ -34,9 +34,9 @@ CREATE TABLE IF NOT EXISTS localidades (
 WITH nuevos_usuarios AS (
   INSERT INTO usuarios (nombre, roles)
   VALUES 
-    ('admin', ARRAY['admin','user']),
-    ('usuario1', ARRAY['user']),
-    ('usuario2', ARRAY['user'])
+    ('admin', ARRAY[1,2]),
+    ('usuario1', ARRAY[2]),
+    ('usuario2', ARRAY[2])
   RETURNING id_usuario
 )
 INSERT INTO credenciales (id_usuario, password_hash)
