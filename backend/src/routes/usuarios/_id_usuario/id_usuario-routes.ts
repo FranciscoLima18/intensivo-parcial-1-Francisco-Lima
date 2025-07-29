@@ -27,10 +27,10 @@ const usuariosRoutes: FastifyPluginAsyncTypebox = async (
     },
     onRequest: fastify.verifySelfOrAdmin,
     handler: async function (request, reply) {
-      const { id } = request.params as UsuarioParamsType;
-      const user = await usuarioRepository.getById(id);
+      const { id_usuario } = request.params as UsuarioParamsType;
+      const user = await usuarioRepository.getById(id_usuario);
       if (!user) {
-        throw new UCUErrorNotFound(`Usuario ${id} no encontrado`);
+        throw new UCUErrorNotFound(`Usuario ${id_usuario} no encontrado`);
       }
     },
   });

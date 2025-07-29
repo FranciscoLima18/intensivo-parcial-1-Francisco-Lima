@@ -40,8 +40,10 @@ export const Usuario = Type.Object({
 export type Usuario = Static<typeof Usuario>;
 
 export const UsuarioPostSchema = Type.Object({
-  nombre: Type.String({ minLength: 3, maxLength: 10 }),
-  roles: Type.Array(Type.Object({ id: Type.String() })),
+  id_usuario: Type.Object({
+    nombre: Type.String({ minLength: 3, maxLength: 10 }),
+    roles: Type.Array(Type.Object({ id: Type.String() })),
+  }),
 });
 
 export type UsuarioPostType = Static<typeof UsuarioPostSchema>;

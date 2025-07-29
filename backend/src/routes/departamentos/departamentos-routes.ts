@@ -64,9 +64,11 @@ const departamentoRoutes: FastifyPluginAsyncTypebox = async (
     },
     onRequest: fastify.verifySelfOrAdmin,
     handler: async function (request, reply) {
-      const { id } = request.params as UsuarioParamsType;
+      const { id_usuario } = request.params as UsuarioParamsType;
 
-      const departamentos = await usuarioRepository.getDepartamentos(id);
+      const departamentos = await usuarioRepository.getDepartamentos(
+        id_usuario
+      );
       return departamentos;
     },
   });
